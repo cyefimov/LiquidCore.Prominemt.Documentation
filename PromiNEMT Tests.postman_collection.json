@@ -31,12 +31,14 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
 											"pm.test(\"Item has Id \" + pm.environment.get(\"defaultId\"), function () {\r",
-											"    pm.expect(pm.response.json().data.id).to.eql(parseInt(pm.environment.get(\"defaultId\")));\r",
+											"    pm.expect(jsonData.data.id).to.eql(parseInt(pm.environment.get(\"idDefault\")));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has no errors\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eql(0);\r",
+											"    pm.expect(jsonData.errors.length).to.eql(0);\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -44,16 +46,26 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/{{defaultId}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
-										"{{defaultId}}"
+										"{{idDefault}}"
 									]
 								}
 							},
@@ -74,16 +86,18 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
 											"pm.test(\"Response data is NULL\", function () {     \r",
-											"    pm.expect(pm.response.json().data).to.be.null;\r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has 1 error\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eql(1);    \r",
+											"    pm.expect(jsonData.errors.length).to.eql(1);    \r",
 											"});\r",
 											"\r",
 											"pm.test(\"ID error message\", function () { \r",
-											"    pm.expect(pm.response.json().errors[0].message).to.eql(\"Id is not valid.\");\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql(\"Id is not valid.\");\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -91,16 +105,33 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/{{invalidId}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idInvalid}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
-										"{{invalidId}}"
+										"{{idInvalid}}"
 									]
 								}
 							},
@@ -121,12 +152,14 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
 											"pm.test(\"Response data is NULL\", function () {     \r",
-											"    pm.expect(pm.response.json().data).to.be.null;\r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has no errors\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eql(0);    \r",
+											"    pm.expect(jsonData.errors.length).to.eql(0);    \r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -134,16 +167,26 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/{{nonExistingId}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idNonExisting}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
-										"{{nonExistingId}}"
+										"{{idNonExisting}}"
 									]
 								}
 							},
@@ -169,12 +212,14 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Item has ExternalId \" + pm.environment.get(\"defaultExternalIdLC\"), function () {\r",
-											"    pm.expect(pm.response.json().data.externalId.toLowerCase()).to.eq(pm.environment.get(\"defaultExternalIdLC\"));\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Item has ExternalId \" + pm.environment.get(\"externalIdLCDefault\"), function () {\r",
+											"    pm.expect(jsonData.data.externalId.toLowerCase()).to.eq(pm.environment.get(\"externalIdLCDefault\"));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has no errors\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eql(0);\r",
+											"    pm.expect(jsonData.errors.length).to.eql(0);\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -182,17 +227,27 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/ext/{{defaultExternalIdLC}}",
+									"raw": "{{apiUrlAdmin}}/users/ext/{{externalIdLCDefault}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"ext",
-										"{{defaultExternalIdLC}}"
+										"{{externalIdLCDefault}}"
 									]
 								}
 							},
@@ -213,12 +268,14 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Item has ExternalId \" + pm.environment.get(\"defaultExternalIdUC\"), function () {\r",
-											"    pm.expect(pm.response.json().data.externalId).to.eq(pm.environment.get(\"defaultExternalIdUC\"));\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Item has ExternalId \" + pm.environment.get(\"externalIdUCDefault\"), function () {\r",
+											"    pm.expect(jsonData.data.externalId).to.eq(pm.environment.get(\"externalIdUCDefault\"));\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has no errors\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eql(0);\r",
+											"    pm.expect(jsonData.errors.length).to.eql(0);\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -226,17 +283,27 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/ext/{{defaultExternalIdUC}}",
+									"raw": "{{apiUrlAdmin}}/users/ext/{{externalIdUCDefault}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"ext",
-										"{{defaultExternalIdUC}}"
+										"{{externalIdUCDefault}}"
 									]
 								}
 							},
@@ -257,14 +324,16 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
 											"pm.test(\"Response data is NULL\", function () {     \r",
-											"    pm.expect(pm.response.json().data).to.be.null;\r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has errors\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eql(2);    \r",
-											"    pm.expect(pm.response.json().errors[0].message).to.eql(\"Id must be 36 characters.\");\r",
-											"    pm.expect(pm.response.json().errors[1].message).to.eql(\"Id is not valid.\");\r",
+											"    pm.expect(jsonData.errors.length).to.eql(2);    \r",
+											"    pm.expect(jsonData.errors[0].message).to.eql(\"Id must be 36 characters.\");\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql(\"Id is not valid.\");\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -272,17 +341,27 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/ext/{{invalidExternalId}}",
+									"raw": "{{apiUrlAdmin}}/users/ext/{{externalIdInvalid}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"ext",
-										"{{invalidExternalId}}"
+										"{{externalIdInvalid}}"
 									]
 								}
 							},
@@ -303,12 +382,14 @@
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
 											"pm.test(\"Response data is NULL\", function () {     \r",
-											"    pm.expect(pm.response.json().data).to.be.null;\r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has no errors\", function () {     \r",
-											"    pm.expect(pm.response.json().errors.length).to.eq(0);    \r",
+											"    pm.expect(jsonData.errors.length).to.eq(0);    \r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -316,17 +397,27 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{adminApiUrl}}/users/ext/{{nonExistingExternalId}}",
+									"raw": "{{apiUrlAdmin}}/users/ext/{{externalIdNonExisting}}",
 									"host": [
-										"{{adminApiUrl}}"
+										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"ext",
-										"{{nonExistingExternalId}}"
+										"{{externalIdNonExisting}}"
 									]
 								}
 							},
@@ -336,19 +427,1015 @@
 				},
 				{
 					"name": "GetUsers",
-					"item": []
+					"item": [
+						{
+							"name": "GetUsers - Success",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function () { \r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains at least 1 item\", function () {     \r",
+											"    pm.expect(jsonData.data.length).to.not.be.below(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response body contains not more than \" + vars.pageSize + \" items\", function () {\r",
+											"    pm.response.to.have.jsonBody(\"data\");\r",
+											"    pm.expect(jsonData.data.length).to.not.be.above(Number(vars.pageSize));\r",
+											"});\r",
+											"\r",
+											"pm.test('Items are in requested sorted order', () => {\r",
+											"    var _ = require('lodash')\r",
+											"    var data = JSON.parse(responseBody);\r",
+											"    \r",
+											"    var expectedSortedOrder = _.orderBy(data.data, \r",
+											"        [vars.sorts[0].field.toLowerCase(), vars.sorts[1].field.toLowerCase()],\r",
+											"        [vars.sorts[0].order.toUpperCase(), vars.sorts[1].order.toUpperCase()]);    \r",
+											"   \r",
+											"   pm.expect(data.data).to.eql(expectedSortedOrder);   \r",
+											"});\r",
+											"\r",
+											"pm.test(\"DisplayName or Email or ExternalId contain search string\", function () {    \r",
+											"    const exp = new RegExp(`${vars.searchTerm}`, 'i');    \r",
+											"\r",
+											"    pm.expect(\r",
+											"        jsonData.data[0].externalId.match(exp)\r",
+											"        || jsonData.data[0].displayName.match(exp)\r",
+											"        || jsonData.data[0].email.match(exp)).to.be.not.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has no errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"searchTerm\": \"{{searchTermDefault}}\",\r\n    \"currentPage\": {{сurrentPageDefault}},\r\n    \"pageSize\": {{pageSizeDefault}},\r\n    \"sorts\": [\r\n        { \"field\": \"{{sortFieldDefault}}\", \"order\": \"{{sortOrderDefault}}\" },\r\n        { \"field\": \"{{sortFieldSecond}}\", \"order\": \"{{sortOrderSecond}}\" }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUsers - Success - No items",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () { \r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no items\", function () {     \r",
+											"    pm.expect(jsonData.data.length).to.eq(0);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Row and page counts are 0\", function () {     \r",
+											"    pm.expect(jsonData.rowCount).to.eq(0);\r",
+											"    pm.expect(jsonData.pageCount).to.eq(0);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has no errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"searchTerm\": \"{{searchTermNonExisting}}\",\r\n    \"currentPage\": {{сurrentPageDefault}},\r\n    \"pageSize\": {{pageSizeDefault}},\r\n    \"sorts\": [\r\n        { \"field\": \"{{sortFieldDefault}}\", \"order\": \"{{sortOrderDefault}}\" }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUsers - Empty body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no items\", function () {     \r",
+											"    pm.expect(jsonData.data.length).to.eq(0);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Row and page counts are 0\", function () {     \r",
+											"    pm.expect(jsonData.rowCount).to.eq(0);\r",
+											"    pm.expect(jsonData.pageCount).to.eq(0);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has 2 errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(2);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('PageSize is out of range.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('CurrentPage must be greater than 0.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUsers - Invalid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 415\", function () { \r",
+											"    pm.response.to.have.status(415);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body has no data object\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.undefined;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has no paging result\", function () {     \r",
+											"    pm.expect(jsonData.rowCount).to.be.undefined;\r",
+											"    pm.expect(jsonData.pageCount).to.be.undefined;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has no errors\", function () {     \r",
+											"    pm.expect(jsonData.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
 					"name": "CreateUser",
-					"item": []
+					"item": [
+						{
+							"name": "CreateUser - Empty body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(5);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('Email is not valid.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('CreatedBy is not valid.');\r",
+											"    pm.expect(jsonData.errors[2].message).to.eql('ExternalId must be 36 characters.');\r",
+											"    pm.expect(jsonData.errors[3].message).to.eql('ExternalId is not valid.');\r",
+											"    pm.expect(jsonData.errors[4].message).to.eql('DisplayName must not be empty.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateUser - Invalid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(5);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('Email is not valid.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('CreatedBy is not valid.');\r",
+											"    pm.expect(jsonData.errors[2].message).to.eql('ExternalId must be 36 characters.');\r",
+											"    pm.expect(jsonData.errors[3].message).to.eql('ExternalId is not valid.');\r",
+											"    pm.expect(jsonData.errors[4].message).to.eql('DisplayName must not be empty.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdInvalid}}\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\",\r\n    \"createdBy\": {{idInvalid}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateUser - Existing values",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {\r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {\r",
+											"    pm.expect(jsonData.errors.length).to.eql(3);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('ExternalId exists.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('DisplayName exists.');\r",
+											"    pm.expect(jsonData.errors[2].message).to.eql('Email exists.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameExisting}}\",\r\n    \"email\": \"{{emailExisting}}\",\r\n    \"createdBy\": {{idDefault}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
 					"name": "UpdateUser",
-					"item": []
+					"item": [
+						{
+							"name": "UpdateUser - Empty body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(2);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('No update information provided.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('UpdatedBy is not valid.');    \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idDefault}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateUser - Invalid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(4);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('id is not valid.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('UpdatedBy is not valid.');\r",
+											"    pm.expect(jsonData.errors[2].message).to.eql('ExternalId must be 36 characters.');\r",
+											"    pm.expect(jsonData.errors[3].message).to.eql('ExternalId is not valid.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdInvalid}}\",\r\n    \"displayName\": \"{{displayNameDefault}}\",\r\n    \"email\": \"{{emailDefault}}\",\r\n    \"updatedBy\": {{idInvalid}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idInvalid}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idInvalid}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateUser - Non-existing item",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 404\", function () { \r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has not errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eq(0);    \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameDefault}}\",\r\n    \"email\": \"{{emailDefault}}\",\r\n    \"updatedBy\": {{idDefault}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idNonExisting}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idNonExisting}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateUser - Existing values",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {\r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {\r",
+											"    pm.expect(jsonData.errors.length).to.eql(3);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('ExternalId exists.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('DisplayName exists.');\r",
+											"    pm.expect(jsonData.errors[2].message).to.eql('Email exists.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameExisting}}\",\r\n    \"email\": \"{{emailExisting}}\",\r\n    \"updatedBy\": {{idDefault}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idDefault}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
 					"name": "DeleteUser",
-					"item": []
+					"item": [
+						{
+							"name": "DeleteUser - Empty body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(1);    \r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('UpdatedBy is not valid.');    \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idDefault}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteUser - Invalid body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eql(2);\r",
+											"    pm.expect(jsonData.errors[0].message).to.eql('id is not valid.');\r",
+											"    pm.expect(jsonData.errors[1].message).to.eql('UpdatedBy is not valid.');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"updatedBy\": {{idInvalid}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idInvalid}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idInvalid}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteUser - Non-existing item",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 404\", function () { \r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response body contains no data\", function () {     \r",
+											"    pm.expect(jsonData.data).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has not errors\", function () {     \r",
+											"    pm.expect(jsonData.errors.length).to.eq(0);    \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"updatedBy\": {{idDefault}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idNonExisting}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idNonExisting}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
