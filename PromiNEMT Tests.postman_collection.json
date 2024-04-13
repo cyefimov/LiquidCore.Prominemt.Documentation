@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "91cc9fed-7b4b-4aec-bd1d-3b2eceaf4efd",
+		"_postman_id": "411fc427-9e18-4700-84e2-91e0fcd67d96",
 		"name": "PromiNEMT Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "273897"
@@ -468,7 +468,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users?searchTerm={{searchTermDefault}}&currentPage={{сurrentPageDefault}}&pageSize={{pageSizeDefault}}&orderBy={{orderByDefault}}&orderAs={{orderAsDefault}}",
+									"raw": "{{apiUrlAdmin}}/users?searchTerm={{searchTermDefault}}&isActive={{isActiveOnly}}&currentPage={{сurrentPageDefault}}&pageSize={{pageSizeDefault}}&orderBy={{orderByDefault}}&orderAs={{orderAsDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
@@ -479,6 +479,10 @@
 										{
 											"key": "searchTerm",
 											"value": "{{searchTermDefault}}"
+										},
+										{
+											"key": "isActive",
+											"value": "{{isActiveOnly}}"
 										},
 										{
 											"key": "currentPage",
@@ -561,7 +565,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users?searchTerm={{searchTermNonExisting}}&currentPage={{сurrentPageDefault}}&pageSize={{pageSizeDefault}}&orderBy={{orderByDefault}}&orderAs={{orderAsDefault}}",
+									"raw": "{{apiUrlAdmin}}/users?searchTerm={{searchTermNonExisting}}&isActive={{isActiveOnly}}&currentPage={{сurrentPageDefault}}&pageSize={{pageSizeDefault}}&orderBy={{orderByDefault}}&orderAs={{orderAsDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
@@ -572,6 +576,10 @@
 										{
 											"key": "searchTerm",
 											"value": "{{searchTermNonExisting}}"
+										},
+										{
+											"key": "isActive",
+											"value": "{{isActiveOnly}}"
 										},
 										{
 											"key": "currentPage",
@@ -601,11 +609,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"let currentPage = 1;\r",
+											"let pageSize = 10;\r",
+											"let orderBy = 'createdon';\r",
+											"let orderAs = 'asc';\r",
+											"let searchTerm = '';\r",
+											"\r",
 											"let query = {};\r",
 											"pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});\r",
 											"\r",
-											"pm.test(\"Status code is 400\", function () { \r",
-											"    pm.response.to.have.status(400);\r",
+											"pm.test(\"Status code is 200\", function () { \r",
+											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has JSON body\", function () { \r",
@@ -614,21 +628,37 @@
 											"\r",
 											"const jsonData = pm.response.json();\r",
 											"\r",
-											"pm.test(\"Response body contains no items\", function () {     \r",
-											"    pm.expect(jsonData.data).to.be.undefined;\r",
+											"pm.test(\"Response body contains at least 1 item\", function () {     \r",
+											"    pm.expect(jsonData.data.length).to.not.be.equal(0);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Response has title of 'Validation error'\", function () {     \r",
-											"    pm.expect(jsonData.title).to.be.equal(\"Validation error\");\r",
+											"pm.test(\"Current page number equals requested \" + query[\"currentPage\"], function () {    \r",
+											"    pm.expect(jsonData.currentPage).to.be.equal(currentPage);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Response has error\", function () {\r",
-											"    pm.expect(jsonData.errors.length).to.eql(1);\r",
-											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"PageSize\");\r",
-											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'Page Size' must be between 1 and 255. You entered 0.\");\r",
-											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);    \r",
+											"pm.test(\"Page size equals requested \" + query[\"pageSize\"], function () {    \r",
+											"    pm.expect(jsonData.pageSize).to.be.equal(pageSize);\r",
 											"});\r",
-											""
+											"\r",
+											"pm.test(\"Response body contains not more than \" + query[\"pageSize\"] + \" items\", function () {    \r",
+											"    pm.expect(jsonData.data.length).to.not.be.above(pageSize);\r",
+											"});\r",
+											"\r",
+											"pm.test('Items are in requested sorted order', () => {\r",
+											"    let _ = require('lodash')\r",
+											"    let expectedSortedOrder = _.orderBy(jsonData.data, [orderBy, orderAs]);\r",
+											"    pm.expect(jsonData.data).to.eql(expectedSortedOrder);   \r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id, ExternalId, DisplayName or Email contain search string\", function () {    \r",
+											"    const exp = new RegExp(`${searchTerm}`, 'i');    \r",
+											"\r",
+											"    pm.expect(\r",
+											"        jsonData.data[0].id.match(exp)\r",
+											"        || jsonData.data[0].externalId.match(exp)\r",
+											"        || jsonData.data[0].displayName.match(exp)\r",
+											"        || jsonData.data[0].email.match(exp)).to.be.not.null;\r",
+											"});"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -689,19 +719,23 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Response has errors\", function () {     \r",
-											"    pm.expect(jsonData.errors.length).to.eql(3);\r",
+											"    pm.expect(jsonData.errors.length).to.eql(4);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"CurrentPage\");\r",
-											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'Current Page' must be greater than '0'.\");\r",
-											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);    \r",
+											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"SearchTerm\");\r",
+											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"The length of 'Search Term' must be at least 2 characters. You entered 1 characters.\");\r",
+											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"PageSize\");\r",
-											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"'Page Size' must be between 1 and 255. You entered -10.\");\r",
-											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);    \r",
+											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"CurrentPage\");\r",
+											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"'Current Page' must be greater than '0'.\");\r",
+											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"OrderAs\");\r",
-											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'Order As' is not in the correct format.\");\r",
+											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"PageSize\");\r",
+											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'Page Size' must be between 1 and 255. You entered -10.\");\r",
 											"    pm.expect(jsonData.errors[2].type).to.be.equal(1);    \r",
+											"\r",
+											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"OrderAs\");\r",
+											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"'Order As' is not in the correct format.\");\r",
+											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);    \r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -723,7 +757,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users?searchTerm={{searchTermEmpty}}&currentPage={{currentPageInvalid}}&pageSize={{pageSizeInvalid}}&orderBy={{orderByDefault}}&orderAs={{orderAsInvalid}}",
+									"raw": "{{apiUrlAdmin}}/users?searchTerm={{searchTermInvalid}}&isActive={{isActiveInvalid}}&currentPage={{currentPageInvalid}}&pageSize={{pageSizeInvalid}}&orderBy={{orderByDefault}}&orderAs={{orderAsInvalid}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
@@ -733,7 +767,11 @@
 									"query": [
 										{
 											"key": "searchTerm",
-											"value": "{{searchTermEmpty}}"
+											"value": "{{searchTermInvalid}}"
+										},
+										{
+											"key": "isActive",
+											"value": "{{isActiveInvalid}}"
 										},
 										{
 											"key": "currentPage",
@@ -1501,427 +1539,6 @@
 							"response": []
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "Dev",
-			"item": [
-				{
-					"name": "GetUsers - Dev",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// var vars = JSON.parse(pm.request.body);\r",
-									"\r",
-									"// pm.test(\"Status code is 200\", function () { \r",
-									"//     pm.response.to.have.status(200);\r",
-									"// });\r",
-									"\r",
-									"// pm.test(\"Response has JSON body\", function () { \r",
-									"//     pm.response.to.be.json;\r",
-									"// });\r",
-									"\r",
-									"// const jsonData = pm.response.json();\r",
-									"\r",
-									"// pm.test(\"Response body contains at least 1 item\", function () {     \r",
-									"//     pm.expect(jsonData.data.length).to.not.be.below(1);\r",
-									"// });\r",
-									"\r",
-									"// pm.test(\"Response body contains not more than \" + vars.pageSize + \" items\", function () {\r",
-									"//     pm.response.to.have.jsonBody(\"data\");\r",
-									"//     pm.expect(jsonData.data.length).to.not.be.above(Number(vars.pageSize));\r",
-									"// });\r",
-									"\r",
-									"// pm.test('Items are in requested sorted order', () => {\r",
-									"//     var _ = require('lodash')\r",
-									"//     var data = JSON.parse(responseBody);\r",
-									"    \r",
-									"//     var expectedSortedOrder = _.orderBy(data.data, \r",
-									"//         [vars.sorts[0].field.toLowerCase(), vars.sorts[1].field.toLowerCase()],\r",
-									"//         [vars.sorts[0].order.toUpperCase(), vars.sorts[1].order.toUpperCase()]);    \r",
-									"   \r",
-									"//    pm.expect(data.data).to.eql(expectedSortedOrder);   \r",
-									"// });\r",
-									"\r",
-									"// pm.test(\"DisplayName or Email or ExternalId contain search string\", function () {    \r",
-									"//     const exp = new RegExp(`${vars.searchTerm}`, 'i');    \r",
-									"\r",
-									"//     pm.expect(\r",
-									"//         jsonData.data[0].externalId.match(exp)\r",
-									"//         || jsonData.data[0].displayName.match(exp)\r",
-									"//         || jsonData.data[0].email.match(exp)).to.be.not.null;\r",
-									"// });\r",
-									"\r",
-									"// pm.test(\"Response has no errors\", function () {     \r",
-									"//     pm.expect(jsonData.errors.length).to.eql(0);\r",
-									"// });"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{apiUrlAdmin}}/users?SearchTerm=&currentPage=1&pageSize=10&orderBy=createdOn&orderAs=desc",
-							"host": [
-								"{{apiUrlAdmin}}"
-							],
-							"path": [
-								"users"
-							],
-							"query": [
-								{
-									"key": "SearchTerm",
-									"value": ""
-								},
-								{
-									"key": "currentPage",
-									"value": "1"
-								},
-								{
-									"key": "pageSize",
-									"value": "10"
-								},
-								{
-									"key": "orderBy",
-									"value": "createdOn"
-								},
-								{
-									"key": "orderAs",
-									"value": "desc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GetUserById - Dev",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () { \r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has JSON body\", function () { \r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"const jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Item has Id \" + pm.environment.get(\"defaultId\"), function () {\r",
-									"    pm.expect(jsonData.data.id).to.eql(parseInt(pm.environment.get(\"idDefault\")));\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has no errors\", function () {     \r",
-									"    pm.expect(jsonData.errors.length).to.eql(0);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{apiUrlAdmin}}/users/99DCBAF2-4CD6-EE11-BF24-429F38B7F6D5",
-							"host": [
-								"{{apiUrlAdmin}}"
-							],
-							"path": [
-								"users",
-								"99DCBAF2-4CD6-EE11-BF24-429F38B7F6D5"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GetUserByExternalId - Dev",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () { \r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has JSON body\", function () { \r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"const jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Item has ExternalId \" + pm.environment.get(\"externalIdLCDefault\"), function () {\r",
-									"    pm.expect(jsonData.data.externalId.toLowerCase()).to.eq(pm.environment.get(\"externalIdLCDefault\"));\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has no errors\", function () {     \r",
-									"    pm.expect(jsonData.errors.length).to.eql(0);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{apiUrlAdmin}}/users/B047A58C-3019-488E-AA9B-EE70B8257612",
-							"host": [
-								"{{apiUrlAdmin}}"
-							],
-							"path": [
-								"users",
-								"B047A58C-3019-488E-AA9B-EE70B8257612"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DeleteUser - Dev",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// var vars = JSON.parse(pm.request.body);\r",
-									"\r",
-									"// pm.test(\"Status code is 404\", function () { \r",
-									"//     pm.response.to.have.status(404);\r",
-									"// });\r",
-									"\r",
-									"// pm.test(\"Response has JSON body\", function () { \r",
-									"//     pm.response.to.be.json;\r",
-									"// });\r",
-									"\r",
-									"// const jsonData = pm.response.json();\r",
-									"\r",
-									"// pm.test(\"Response body contains no data\", function () {     \r",
-									"//     pm.expect(jsonData.data).to.be.null;\r",
-									"// });\r",
-									"\r",
-									"// pm.test(\"Response has not errors\", function () {     \r",
-									"//     pm.expect(jsonData.errors.length).to.eq(0);    \r",
-									"// });"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{apiUrlAdmin}}/users/E1855D32-A1D5-EE11-BF24-429F38B7F6D5?updatedBy={{idDefault}}",
-							"host": [
-								"{{apiUrlAdmin}}"
-							],
-							"path": [
-								"users",
-								"E1855D32-A1D5-EE11-BF24-429F38B7F6D5"
-							],
-							"query": [
-								{
-									"key": "updatedBy",
-									"value": "{{idDefault}}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "CreateUser - Dev",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var vars = JSON.parse(pm.request.body);\r",
-									"\r",
-									"pm.test(\"Status code is 400\", function () { \r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has JSON body\", function () { \r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"const jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Response body contains no data\", function () {\r",
-									"    pm.expect(jsonData.data).to.be.null;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has errors\", function () {\r",
-									"    pm.expect(jsonData.errors.length).to.eql(3);\r",
-									"    pm.expect(jsonData.errors[0].message).to.eql('ExternalId exists.');\r",
-									"    pm.expect(jsonData.errors[1].message).to.eql('DisplayName exists.');\r",
-									"    pm.expect(jsonData.errors[2].message).to.eql('Email exists.');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{ \r\n    \"externalId\": \"B047A58C-3019-488E-AA9B-EE70B8257613\",\r\n    \"displayName\": \"Very New user\",\r\n    \"email\": \"verynewuser@gmailll.com\",\r\n    \"createdBy\": \"{{idDefault}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{apiUrlAdmin}}/users",
-							"host": [
-								"{{apiUrlAdmin}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "UpdateUser - Dev",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var vars = JSON.parse(pm.request.body);\r",
-									"\r",
-									"pm.test(\"Status code is 400\", function () { \r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has JSON body\", function () { \r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"const jsonData = pm.response.json();\r",
-									"\r",
-									"pm.test(\"Response body contains no data\", function () {\r",
-									"    pm.expect(jsonData.data).to.be.null;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response has errors\", function () {\r",
-									"    pm.expect(jsonData.errors.length).to.eql(3);\r",
-									"    pm.expect(jsonData.errors[0].message).to.eql('ExternalId exists.');\r",
-									"    pm.expect(jsonData.errors[1].message).to.eql('DisplayName exists.');\r",
-									"    pm.expect(jsonData.errors[2].message).to.eql('Email exists.');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{ \r\n    \"externalId\": \"B047A58C-3019-488E-AA9B-EE70B8257615\",\r\n    \"displayName\": \"Very New user2\",\r\n    \"email\": \"verynewuser2@gmailll.com\",\r\n    \"updatedBy\": \"FCF61456-9893-4A12-8178-08DC386DA891\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{apiUrlAdmin}}/users/FCF61456-9893-4A12-8178-08DC386DA891",
-							"host": [
-								"{{apiUrlAdmin}}"
-							],
-							"path": [
-								"users",
-								"FCF61456-9893-4A12-8178-08DC386DA891"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		}
