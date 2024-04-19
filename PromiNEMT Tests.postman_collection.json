@@ -1144,6 +1144,67 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "CreateUser - Non-existing creator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 500\", function () { \r",
+											"    pm.response.to.have.status(500);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response has Internal Server Error\", function () {         \r",
+											"    pm.expect(jsonData.title).to.eql('Internal Server Error');\r",
+											"    pm.expect(jsonData.detail).to.eql('An error occurred while saving the entity changes. See the inner exception for details.');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\",\r\n    \"createdBy\": \"{{idNonExisting}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -1362,6 +1423,68 @@
 									"path": [
 										"users",
 										"{{idNonExisting}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateUser - Non-existing updator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 500\", function () { \r",
+											"    pm.response.to.have.status(500);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response has Internal Server Error\", function () {         \r",
+											"    pm.expect(jsonData.title).to.eql('Internal Server Error');\r",
+											"    pm.expect(jsonData.detail).to.eql('An error occurred while saving the entity changes. See the inner exception for details.');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\",\r\n    \"updatedBy\": \"{{idNonExisting}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idDefault}}"
 									]
 								}
 							},
