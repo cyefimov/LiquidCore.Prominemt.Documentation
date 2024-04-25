@@ -1102,7 +1102,7 @@
 											"\r",
 											"pm.test(\"Response has error\", function () {    \r",
 											"    pm.expect(jsonData.code).to.eql(\"User.Exists\");\r",
-											"    pm.expect(jsonData.description).to.eql('User with such properties already exists');\r",
+											"    pm.expect(jsonData.description).to.eql('User exists');\r",
 											"    pm.expect(jsonData.type).to.eql(3);\r",
 											"});"
 										],
@@ -1153,7 +1153,7 @@
 									"script": {
 										"exec": [
 											"pm.test(\"Status code is 500\", function () { \r",
-											"    pm.response.to.have.status(500);\r",
+											"    pm.response.to.have.status(400);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has JSON body\", function () { \r",
@@ -1163,8 +1163,9 @@
 											"const jsonData = pm.response.json();\r",
 											"\r",
 											"pm.test(\"Response has Internal Server Error\", function () {         \r",
-											"    pm.expect(jsonData.title).to.eql('Internal Server Error');\r",
-											"    pm.expect(jsonData.detail).to.eql('An error occurred while saving the entity changes. See the inner exception for details.');\r",
+											"    pm.expect(jsonData.type).to.eql('User.NotCreated');\r",
+											"    pm.expect(jsonData.title).to.eql('Bad request');\r",
+											"    pm.expect(jsonData.detail).to.eql(\"An error occurred while saving the entity changes. See the inner exception for details. The INSERT statement conflicted with the FOREIGN KEY SAME TABLE constraint \\\"FK_Security_User_CreatedBy_Security_User\\\". The conflict occurred in database \\\"Prominemt\\\", table \\\"Security.User\\\", column 'UserId'.\");\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -1436,7 +1437,7 @@
 									"script": {
 										"exec": [
 											"pm.test(\"Status code is 500\", function () { \r",
-											"    pm.response.to.have.status(500);\r",
+											"    pm.response.to.have.status(400);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has JSON body\", function () { \r",
@@ -1446,8 +1447,9 @@
 											"const jsonData = pm.response.json();\r",
 											"\r",
 											"pm.test(\"Response has Internal Server Error\", function () {         \r",
-											"    pm.expect(jsonData.title).to.eql('Internal Server Error');\r",
-											"    pm.expect(jsonData.detail).to.eql('An error occurred while saving the entity changes. See the inner exception for details.');\r",
+											"    pm.expect(jsonData.type).to.eql('User.NotUpdated');\r",
+											"    pm.expect(jsonData.title).to.eql('Bad request');\r",
+											"    pm.expect(jsonData.detail).to.eql(\"An error occurred while saving the entity changes. See the inner exception for details. The UPDATE statement conflicted with the FOREIGN KEY SAME TABLE constraint \\\"FK_Security_User_UpdatedBy_Security_User\\\". The conflict occurred in database \\\"Prominemt\\\", table \\\"Security.User\\\", column 'UserId'.\");\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -1511,7 +1513,7 @@
 											"\r",
 											"pm.test(\"Response has error\", function () {    \r",
 											"    pm.expect(jsonData.code).to.eql(\"User.Exists\");\r",
-											"    pm.expect(jsonData.description).to.eql('User with such properties already exists');\r",
+											"    pm.expect(jsonData.description).to.eql('User exists');\r",
 											"    pm.expect(jsonData.type).to.eql(3);\r",
 											"});"
 										],
@@ -1655,6 +1657,66 @@
 										{
 											"key": "updatedBy",
 											"value": "{{idDefault}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteUser - Non-existing updator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 500\", function () { \r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response has Internal Server Error\", function () {         \r",
+											"    pm.expect(jsonData.type).to.eql('User.NotDeleted');\r",
+											"    pm.expect(jsonData.title).to.eql('Bad request');\r",
+											"    pm.expect(jsonData.detail).to.eql(\"An error occurred while saving the entity changes. See the inner exception for details. The UPDATE statement conflicted with the FOREIGN KEY SAME TABLE constraint \\\"FK_Security_User_UpdatedBy_Security_User\\\". The conflict occurred in database \\\"Prominemt\\\", table \\\"Security.User\\\", column 'UserId'.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}?updatedBy={{idNonExisting}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idDefault}}"
+									],
+									"query": [
+										{
+											"key": "updatedBy",
+											"value": "{{idNonExisting}}"
 										}
 									]
 								}
