@@ -116,8 +116,7 @@
 									{
 										"key": "Authorization",
 										"value": "",
-										"type": "text",
-										"disabled": true
+										"type": "text"
 									}
 								],
 								"url": {
@@ -800,16 +799,14 @@
 					"name": "CreateUser",
 					"item": [
 						{
-							"name": "CreateUser - Empty body",
+							"name": "CreateUser - Missing query param",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var vars = JSON.parse(pm.request.body);\r",
-											"\r",
-											"pm.test(\"Status code is 400\", function () { \r",
-											"    pm.response.to.have.status(400);\r",
+											"pm.test(\"Status code is 500\", function () { \r",
+											"    pm.response.to.have.status(500);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Response has JSON body\", function () { \r",
@@ -818,40 +815,9 @@
 											"\r",
 											"const jsonData = pm.response.json();\r",
 											"\r",
-											"pm.test(\"Response has title of 'Validation error'\", function () {     \r",
-											"    pm.expect(jsonData.title).to.be.equal(\"Validation error\");\r",
-											"});\r",
-											"\r",
-											"pm.test(\"Response has errors\", function () {     \r",
-											"    pm.expect(jsonData.errors.length).to.eql(7);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"CreatedBy\");\r",
-											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'Created By' must not be empty.\");\r",
-											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"CreatedBy\");\r",
-											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'Created By'.\");\r",
-											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"ExternalId\");\r",
-											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'External Id' must not be empty.\");\r",
-											"    pm.expect(jsonData.errors[2].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"ExternalId\");\r",
-											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"The specified condition was not met for 'External Id'.\");\r",
-											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);    \r",
-											"\r",
-											"    pm.expect(jsonData.errors[4].code).to.be.equal(\"Email\");\r",
-											"    pm.expect(jsonData.errors[4].description).to.be.equal(\"'Email' must not be empty.\");\r",
-											"    pm.expect(jsonData.errors[4].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[5].code).to.be.equal(\"Email\");\r",
-											"    pm.expect(jsonData.errors[5].description).to.be.equal(\"The specified condition was not met for 'Email'.\");\r",
-											"    pm.expect(jsonData.errors[5].type).to.be.equal(1);    \r",
-											"\r",
-											"    pm.expect(jsonData.errors[6].code).to.be.equal(\"DisplayName\");\r",
-											"    pm.expect(jsonData.errors[6].description).to.be.equal(\"'Display Name' must not be empty.\");\r",
-											"    pm.expect(jsonData.errors[6].type).to.be.equal(1);    \r",
+											"pm.test(\"Response has Internal Server Error\", function () {         \r",
+											"    pm.expect(jsonData.title).to.eql('Internal Server Error');\r",
+											"    pm.expect(jsonData.detail).to.eql('Required parameter \\\"Guid createdBy\\\" was not provided from query string.');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -874,7 +840,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\",\r\n    \"createdBy\": \"\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -894,6 +860,98 @@
 							"response": []
 						},
 						{
+							"name": "CreateUser - Empty body",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var vars = JSON.parse(pm.request.body);\r",
+											"\r",
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response has title of 'Validation error'\", function () {\r",
+											"    pm.expect(jsonData.title).to.be.equal(\"Validation error\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has errors\", function () {\r",
+											"    pm.expect(jsonData.errors.length).to.eql(5);\r",
+											"\r",
+											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"ExternalId\");\r",
+											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'External Id' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);\r",
+											"\r",
+											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"ExternalId\");\r",
+											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'External Id'.\");\r",
+											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);\r",
+											"\r",
+											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"Email\");\r",
+											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'Email' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[2].type).to.be.equal(1);\r",
+											"\r",
+											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"Email\");\r",
+											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"The specified condition was not met for 'Email'.\");\r",
+											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);\r",
+											"\r",
+											"    pm.expect(jsonData.errors[4].code).to.be.equal(\"DisplayName\");\r",
+											"    pm.expect(jsonData.errors[4].description).to.be.equal(\"'Display Name' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[4].type).to.be.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users?createdBy={{idDefault}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users"
+									],
+									"query": [
+										{
+											"key": "createdBy",
+											"value": "{{idDefault}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "CreateUser - Missing body",
 							"event": [
 								{
@@ -902,50 +960,42 @@
 										"exec": [
 											"var vars = JSON.parse(pm.request.body);\r",
 											"\r",
-											"pm.test(\"Status code is 400\", function () { \r",
+											"pm.test(\"Status code is 400\", function () {\r",
 											"    pm.response.to.have.status(400);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Response has JSON body\", function () { \r",
+											"pm.test(\"Response has JSON body\", function () {\r",
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
 											"const jsonData = pm.response.json();\r",
 											"\r",
-											"pm.test(\"Response has title of 'Validation error'\", function () {     \r",
+											"pm.test(\"Response has title of 'Validation error'\", function () {\r",
 											"    pm.expect(jsonData.title).to.be.equal(\"Validation error\");\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Response has errors\", function () {     \r",
-											"    pm.expect(jsonData.errors.length).to.eql(7);\r",
+											"pm.test(\"Response has errors\", function () {\r",
+											"    pm.expect(jsonData.errors.length).to.eql(5);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"CreatedBy\");\r",
-											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'Created By' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"ExternalId\");\r",
+											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'External Id' must not be empty.\");\r",
 											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"CreatedBy\");\r",
-											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'Created By'.\");\r",
+											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"ExternalId\");\r",
+											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'External Id'.\");\r",
 											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"ExternalId\");\r",
-											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'External Id' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"Email\");\r",
+											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'Email' must not be empty.\");\r",
 											"    pm.expect(jsonData.errors[2].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"ExternalId\");\r",
-											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"The specified condition was not met for 'External Id'.\");\r",
-											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);    \r",
+											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"Email\");\r",
+											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"The specified condition was not met for 'Email'.\");\r",
+											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[4].code).to.be.equal(\"Email\");\r",
-											"    pm.expect(jsonData.errors[4].description).to.be.equal(\"'Email' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[4].code).to.be.equal(\"DisplayName\");\r",
+											"    pm.expect(jsonData.errors[4].description).to.be.equal(\"'Display Name' must not be empty.\");\r",
 											"    pm.expect(jsonData.errors[4].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[5].code).to.be.equal(\"Email\");\r",
-											"    pm.expect(jsonData.errors[5].description).to.be.equal(\"The specified condition was not met for 'Email'.\");\r",
-											"    pm.expect(jsonData.errors[5].type).to.be.equal(1);    \r",
-											"\r",
-											"    pm.expect(jsonData.errors[6].code).to.be.equal(\"DisplayName\");\r",
-											"    pm.expect(jsonData.errors[6].description).to.be.equal(\"'Display Name' must not be empty.\");\r",
-											"    pm.expect(jsonData.errors[6].type).to.be.equal(1);    \r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -976,12 +1026,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users",
+									"raw": "{{apiUrlAdmin}}/users?createdBy={{idDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users"
+									],
+									"query": [
+										{
+											"key": "createdBy",
+											"value": "{{idDefault}}"
+										}
 									]
 								}
 							},
@@ -996,50 +1052,42 @@
 										"exec": [
 											"var vars = JSON.parse(pm.request.body);\r",
 											"\r",
-											"pm.test(\"Status code is 400\", function () { \r",
+											"pm.test(\"Status code is 400\", function () {\r",
 											"    pm.response.to.have.status(400);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Response has JSON body\", function () { \r",
+											"pm.test(\"Response has JSON body\", function () {\r",
 											"    pm.response.to.be.json;\r",
 											"});\r",
 											"\r",
 											"const jsonData = pm.response.json();\r",
 											"\r",
-											"pm.test(\"Response has title of 'Validation error'\", function () {     \r",
+											"pm.test(\"Response has title of 'Validation error'\", function () {\r",
 											"    pm.expect(jsonData.title).to.be.equal(\"Validation error\");\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Response has errors\", function () {     \r",
-											"    pm.expect(jsonData.errors.length).to.eql(7);\r",
+											"pm.test(\"Response has errors\", function () {\r",
+											"    pm.expect(jsonData.errors.length).to.eql(5);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"CreatedBy\");\r",
-											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'Created By' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"ExternalId\");\r",
+											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'External Id' must not be empty.\");\r",
 											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"CreatedBy\");\r",
-											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'Created By'.\");\r",
+											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"ExternalId\");\r",
+											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'External Id'.\");\r",
 											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"ExternalId\");\r",
-											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'External Id' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"Email\");\r",
+											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"'Email' must not be empty.\");\r",
 											"    pm.expect(jsonData.errors[2].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"ExternalId\");\r",
-											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"The specified condition was not met for 'External Id'.\");\r",
-											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);    \r",
+											"    pm.expect(jsonData.errors[3].code).to.be.equal(\"Email\");\r",
+											"    pm.expect(jsonData.errors[3].description).to.be.equal(\"The specified condition was not met for 'Email'.\");\r",
+											"    pm.expect(jsonData.errors[3].type).to.be.equal(1);\r",
 											"\r",
-											"    pm.expect(jsonData.errors[4].code).to.be.equal(\"Email\");\r",
-											"    pm.expect(jsonData.errors[4].description).to.be.equal(\"'Email' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[4].code).to.be.equal(\"DisplayName\");\r",
+											"    pm.expect(jsonData.errors[4].description).to.be.equal(\"'Display Name' must not be empty.\");\r",
 											"    pm.expect(jsonData.errors[4].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[5].code).to.be.equal(\"Email\");\r",
-											"    pm.expect(jsonData.errors[5].description).to.be.equal(\"The specified condition was not met for 'Email'.\");\r",
-											"    pm.expect(jsonData.errors[5].type).to.be.equal(1);    \r",
-											"\r",
-											"    pm.expect(jsonData.errors[6].code).to.be.equal(\"DisplayName\");\r",
-											"    pm.expect(jsonData.errors[6].description).to.be.equal(\"'Display Name' must not be empty.\");\r",
-											"    pm.expect(jsonData.errors[6].type).to.be.equal(1);    \r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -1062,7 +1110,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"{{externalIdInvalid}}\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\",\r\n    \"createdBy\": \"{{idInvalid}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdInvalid}}\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1070,12 +1118,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users",
+									"raw": "{{apiUrlAdmin}}/users?createdBy={{idDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users"
+									],
+									"query": [
+										{
+											"key": "createdBy",
+											"value": "{{idDefault}}"
+										}
 									]
 								}
 							},
@@ -1126,7 +1180,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameExisting}}\",\r\n    \"email\": \"{{emailExisting}}\",\r\n    \"createdBy\": \"{{idDefault}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameExisting}}\",\r\n    \"email\": \"{{emailExisting}}\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1134,12 +1188,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users",
+									"raw": "{{apiUrlAdmin}}/users?createdBy={{idDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users"
+									],
+									"query": [
+										{
+											"key": "createdBy",
+											"value": "{{idDefault}}"
+										}
 									]
 								}
 							},
@@ -1188,7 +1248,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\",\r\n    \"createdBy\": \"{{idNonExisting}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1196,12 +1256,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users",
+									"raw": "{{apiUrlAdmin}}/users?createdBy={{idNonExisting}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users"
+									],
+									"query": [
+										{
+											"key": "createdBy",
+											"value": "{{idNonExisting}}"
+										}
 									]
 								}
 							},
@@ -1212,6 +1278,68 @@
 				{
 					"name": "UpdateUser",
 					"item": [
+						{
+							"name": "UpdateUser - Missing query param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 500\", function () { \r",
+											"    pm.response.to.have.status(500);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response has JSON body\", function () { \r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Response has Internal Server Error\", function () {         \r",
+											"    pm.expect(jsonData.title).to.eql('Internal Server Error');\r",
+											"    pm.expect(jsonData.detail).to.eql('Required parameter \\\"Guid updatedBy\\\" was not provided from query string.');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n    \"externalId\": \"\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"host": [
+										"{{apiUrlAdmin}}"
+									],
+									"path": [
+										"users",
+										"{{idDefault}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "UpdateUser - Empty body",
 							"event": [
@@ -1236,19 +1364,11 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Response has errors\", function () {     \r",
-											"    pm.expect(jsonData.errors.length).to.eql(3);\r",
+											"    pm.expect(jsonData.errors.length).to.eql(1);    \r",
 											"\r",
-											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"UpdatedBy\");\r",
-											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"'Updated By' must not be empty.\");\r",
+											"    pm.expect(jsonData.errors[0].code).to.be.equal(\"User.Update\");\r",
+											"    pm.expect(jsonData.errors[0].description).to.be.equal(\"No updated values provided\");\r",
 											"    pm.expect(jsonData.errors[0].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[1].code).to.be.equal(\"UpdatedBy\");\r",
-											"    pm.expect(jsonData.errors[1].description).to.be.equal(\"The specified condition was not met for 'Updated By'.\");\r",
-											"    pm.expect(jsonData.errors[1].type).to.be.equal(1);\r",
-											"\r",
-											"    pm.expect(jsonData.errors[2].code).to.be.equal(\"User.Update\");\r",
-											"    pm.expect(jsonData.errors[2].description).to.be.equal(\"No updated values provided\");\r",
-											"    pm.expect(jsonData.errors[2].type).to.be.equal(1);\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -1271,7 +1391,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\",\r\n    \"updatedBy\": \"\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"\",\r\n    \"displayName\": \"\",\r\n    \"email\": \"\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1279,13 +1399,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}?updatedBy={{idDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"{{idDefault}}"
+									],
+									"query": [
+										{
+											"key": "updatedBy",
+											"value": "{{idDefault}}"
+										}
 									]
 								}
 							},
@@ -1358,7 +1484,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"{{externalIdInvalid}}\",\r\n    \"displayName\": \"{{displayNameDefault}}\",\r\n    \"email\": \"{{emailInvalid}}\",\r\n    \"updatedBy\": \"{{idInvalid}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdInvalid}}\",\r\n    \"displayName\": \"{{displayNameDefault}}\",\r\n    \"email\": \"{{emailInvalid}}\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1366,13 +1492,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users/{{idInvalid}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idInvalid}}?updatedBy={{idInvalid}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"{{idInvalid}}"
+									],
+									"query": [
+										{
+											"key": "updatedBy",
+											"value": "{{idInvalid}}"
+										}
 									]
 								}
 							},
@@ -1409,7 +1541,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameDefault}}\",\r\n    \"email\": \"{{emailDefault}}\",\r\n    \"updatedBy\": \"{{idDefault}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameDefault}}\",\r\n    \"email\": \"{{emailDefault}}\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1417,13 +1549,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users/{{idNonExisting}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idNonExisting}}?updatedBy={{idDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"{{idNonExisting}}"
+									],
+									"query": [
+										{
+											"key": "updatedBy",
+											"value": "{{idDefault}}"
+										}
 									]
 								}
 							},
@@ -1472,7 +1610,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\",\r\n    \"updatedBy\": \"{{idNonExisting}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"b047a58c-3019-488e-aa9b-ee70b8257611\",\r\n    \"displayName\": \"Test display name\",\r\n    \"email\": \"test_email@testemail.com\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1480,13 +1618,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}?updatedBy={{idNonExisting}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"{{idDefault}}"
+									],
+									"query": [
+										{
+											"key": "updatedBy",
+											"value": "{{idNonExisting}}"
+										}
 									]
 								}
 							},
@@ -1537,7 +1681,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameExisting}}\",\r\n    \"email\": \"{{emailExisting}}\",\r\n    \"updatedBy\": \"{{idDefault}}\"\r\n}",
+									"raw": "{ \r\n    \"externalId\": \"{{externalIdUCDefault}}\",\r\n    \"displayName\": \"{{displayNameExisting}}\",\r\n    \"email\": \"{{emailExisting}}\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1545,13 +1689,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}",
+									"raw": "{{apiUrlAdmin}}/users/{{idDefault}}?updatedBy={{idDefault}}",
 									"host": [
 										"{{apiUrlAdmin}}"
 									],
 									"path": [
 										"users",
 										"{{idDefault}}"
+									],
+									"query": [
+										{
+											"key": "updatedBy",
+											"value": "{{idDefault}}"
+										}
 									]
 								}
 							},
